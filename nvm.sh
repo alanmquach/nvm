@@ -1889,9 +1889,9 @@ if nvm_supports_source_options && [ "_$1" = "_--install" ]; then
     nvm install >/dev/null
   fi
 elif [ -n "$VERSION" ]; then
-  nvm use "$VERSION" >/dev/null
+  nvm use --silent "$VERSION" >/dev/null
 elif nvm_rc_version >/dev/null 2>&1; then
-  nvm use >/dev/null
+  nvm use --silent >/dev/null
 fi
 
 } # this ensures the entire script is downloaded #
