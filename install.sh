@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 { # this ensures the entire script is downloaded #
 
@@ -11,7 +11,7 @@ if [ -z "$NVM_DIR" ]; then
 fi
 
 nvm_latest_version() {
-  echo "v0.30.0"
+  echo "v0.31.2"
 }
 
 #
@@ -69,7 +69,7 @@ install_nvm_from_git() {
     mkdir -p "$NVM_DIR"
     command git clone "$(nvm_source git)" "$NVM_DIR"
   fi
-  cd "$NVM_DIR" && command git checkout --quiet $(nvm_latest_version)
+  cd "$NVM_DIR" && command git checkout --quiet "$(nvm_latest_version)"
   if [ ! -z "$(cd "$NVM_DIR" && git show-ref refs/heads/master)" ]; then
     if git branch --quiet 2>/dev/null; then
       cd "$NVM_DIR" && command git branch --quiet -D master >/dev/null 2>&1
@@ -115,26 +115,28 @@ install_nvm_as_script() {
 # Otherwise, an empty string is returned
 #
 nvm_detect_profile() {
+  if [ -n "$PROFILE" -a -f "$PROFILE" ]; then
+    echo "$PROFILE"
+    return
+  fi
 
   local DETECTED_PROFILE
   DETECTED_PROFILE=''
   local SHELLTYPE
-  SHELLTYPE="$(basename /$SHELL)"
+  SHELLTYPE="$(basename "/$SHELL")"
 
-  if [ $SHELLTYPE = "bash" ]; then
+  if [ "$SHELLTYPE" = "bash" ]; then
     if [ -f "$HOME/.bashrc" ]; then
       DETECTED_PROFILE="$HOME/.bashrc"
     elif [ -f "$HOME/.bash_profile" ]; then
       DETECTED_PROFILE="$HOME/.bash_profile"
     fi
-  elif [ $SHELLTYPE = "zsh" ]; then
+  elif [ "$SHELLTYPE" = "zsh" ]; then
     DETECTED_PROFILE="$HOME/.zshrc"
   fi
 
-  if [ -z $DETECTED_PROFILE ]; then
-    if [ -f "$PROFILE" ]; then
-      DETECTED_PROFILE="$PROFILE"
-    elif [ -f "$HOME/.profile" ]; then
+  if [ -z "$DETECTED_PROFILE" ]; then
+    if [ -f "$HOME/.profile" ]; then
       DETECTED_PROFILE="$HOME/.profile"
     elif [ -f "$HOME/.bashrc" ]; then
       DETECTED_PROFILE="$HOME/.bashrc"
@@ -145,7 +147,7 @@ nvm_detect_profile() {
     fi
   fi
 
-  if [ ! -z $DETECTED_PROFILE ]; then
+  if [ ! -z "$DETECTED_PROFILE" ]; then
     echo "$DETECTED_PROFILE"
   fi
 }
